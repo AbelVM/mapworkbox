@@ -12,7 +12,7 @@ This is a little Frankenstein monster made to check whether the use of [Workbox]
 
 ## The demo
 
-### https://abelvm.github.io/mapworkbox/example
+### https://abelvm.github.io/mapworkbox/
 
 ## And, how does it work?
 
