@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Map(work)box</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.js"></script>
+<script src="../mapworkbox.mjs" type="module"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.css" rel="stylesheet" />
+<style>
+	body { margin: 0; padding: 0; }
+	#map { position: absolute; top: 0; bottom: 0; width: 100%; };
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+    const
+        c ='#00ffcc',
+        //https://www.mapillary.com/developer/tiles-documentation
+        tiles = 'https://tiles3.mapillary.com/v0.1/{z}/{x}/{y}.mvt', //  'https://d25uarhxywzl1j.cloudfront.net/v0.1/{z}/{x}/{y}.mvt'
+        layer0 = {
+            'id': 'mapillary_0',
+            'type': 'heatmap',
+            'minzoom': 0,
+            'maxzoom': 9,
+            'source': {                    
+                'type': 'vector',
+                'tiles': [tiles],
+                'minzoom': 0,
+                'maxzoom': 5
+            },
+            'source-layer': 'mapillary-sequence-overview',
+            'paint': {
+                'heatmap-weight': [
+                    'interpolate',
+                    ['linear'],
+                    ['get', 'image_count'],
+                    0,
+                    0,
+                    500,
+                    1
+                ],
+                'heatmap-color': [
+                    'interpolate',
+                    ['linear'],
+                    ['heatmap-density'],
+                    0,
+                    'rgba(0,179,143, 0)',
+                    0.5,
+                    'rgba(0,179,143, 0.7)',
+                    0.99,
+                    c,
+                    1,
+                    '#ffffff'
+                ],
+                'heatmap-radius': [
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    0,
+                    2,
+                    8,
+                    10
+                ],
+                'heatmap-opacity': [
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    5,
+                    1,
+                    9,
+                    0
+                ]
+            }
+        }
+        layer1 ={
+            'id': 'mapillary_1',
+            'type': 'line',
+            'minzoom': 6,
+            'maxzoom': 14,
+            'source': {
+                'type': 'vector',
+                'tiles': [tiles],
+                'minzoom': 6,
+                'maxzoom': 14
+            },
+            'source-layer': 'mapillary-sequences',
+            'layout': {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            'paint': {
+                'line-opacity': [
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    4,
+                    0,
+                    8,
+                    1
+                ],
+                'line-color': c,
+                'line-width': [
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    5,
+                    0,
+                    8,
+                    2
+                ]
+            }
+        },
+        layer2 = {
+            'id': 'mapillary_2',
+            'type': 'circle',
+            'minzoom': 14,
+            'source': {                    
+                'type': 'vector',
+                'tiles': [tiles],
+                'minzoom': 14,
+                'maxzoom': 14
+            },
+            'source-layer': 'mapillary-images',
+            'paint': {
+                'circle-color': c,
+                'circle-radius': 3
+            }
+        };
+     
+    let map = new mapboxgl.Map({
+        container: 'map',
+        style: 'http://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+        zoom: 11,
+        center: [-3.691944, 40.418889]
+    });
+
+    map.on('load', () => {
+        map.addLayer(layer2);
+        map.addLayer(layer1);
+        map.addLayer(layer0);
+        mapboxgl.mwb.init(map, 
+        [
+            {
+            'name': 'mapillary_0'
+            },{
+            'name': 'mapillary_1'
+            },{
+            'name': 'mapillary_2'
+            }
+        ]);
+    });
+
+    map.addControl(new mapboxgl.NavigationControl());
+
+</script>
+
+</body>
+</html>
